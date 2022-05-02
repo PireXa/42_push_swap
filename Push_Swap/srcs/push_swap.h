@@ -6,7 +6,7 @@
 /*   By: fde-albe <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/26 11:25:14 by fde-albe          #+#    #+#             */
-/*   Updated: 2022/04/29 12:39:56 by fde-albe         ###   ########.fr       */
+/*   Updated: 2022/05/02 10:40:12 by fde-albe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 
 typedef struct s_stacks {
 	int					cnt;
