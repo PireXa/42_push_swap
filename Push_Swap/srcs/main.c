@@ -6,7 +6,7 @@
 /*   By: fde-albe <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/26 11:05:09 by fde-albe          #+#    #+#             */
-/*   Updated: 2022/05/02 11:20:03 by fde-albe         ###   ########.fr       */
+/*   Updated: 2022/05/12 11:10:52 by fde-albe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ t_ez	*pb(t_ez *sup)
 {
 	t_stack *tmp;
 
+	if (sup->a == NULL)
+		return (sup);
 	tmp = sup->a->next;
 	sup->a->next = sup->b;
 	sup->b = sup->a;
@@ -41,6 +43,8 @@ t_stack	*rotater(t_stack *stck)
 {
 	t_stack	*tmp;
 
+	if (!stck || ft_lstsize(stck) < 2)
+		return (stck);
 	tmp = stck->next;
 	stck->next = NULL;
 	ft_lstlast(tmp)->next = stck;
@@ -79,26 +83,121 @@ void	print_stacks(t_stack *stck_a, t_stack *stck_b)
 	printf("################\n");
 }
 
-int	calc_max(t_stack *stack)
+t_tao_facil	*calc_max(t_stack *stack, t_tao_facil *meh)
 {
 	t_stack	*ex;
-	int	max = 0;
 
 	ex = stack;
+	meh->max = ex->cnt;
+	meh->min = ex->cnt;
+//	meh->max2 = ex->cnt;
+//	meh->min2 = ex->cnt;
 	while (ex)
 	{
-		if (ex->cnt > max)
-			max = ex->cnt;
+		if (meh->max < ex->cnt)
+			meh->max = ex->cnt;
+		if (meh->min > ex->cnt)
+			meh->min = ex->cnt;
 		ex = ex->next;
 	}
-	return (max);
+	return (meh);
 }
+
+void	copy_array(int *streak_hold_rec, int *streak_test, int max)
+{
+	int i = -1;
+
+	while (++i < max)
+		streak_hold_rec[i] = streak_test[i];
+}
+
+void	facil(t_ez *sup)
+{
+	sup->ctr = 0;
+	t_tao_facil *meh;
+	t_stack	*sovai;
+	meh = (t_tao_facil *)malloc(sizeof(t_tao_facil));
+	meh = calc_max(sup->a, meh);
+	int	*streak;
+	int	i = -1;
+	int	lst_size = ft_lstsize(sup->a);
+	print_stacks(sup->a, sup->b);
+	while (sup->a->cnt != meh->min)
+	{
+		sup->a = rotater(sup->a);
+		sup->ctr++;
+	}
+	print_stacks(sup->a, sup->b);
+	sovai = sup->a;
+	streak = (int *)malloc(sizeof(int) * lst_size);
+	while (sovai)
+	{
+		streak[++i] = sovai->cnt;
+		sovai = sovai->next;
+	}
+	i = 0;
+	while (i < lst_size)
+		printf("%d\n", streak[i++]);
+
+//Get Longest Increasing Sequence on the List
+
+	i = 1;
+	int	e = 2;
+	int	f = 2;
+	int	streak_record = 2;
+	int	streak_count = 2;
+	int	streak_hold = 0;
+	int	*streak_test;
+	int *streak_hold_rec;
+	streak_hold_rec = (int *)malloc(sizeof(int) * (lst_size / 2));
+	streak_hold_rec[0] = streak[0];
+	while (i < lst_size)
+	{
+		streak_test = (int *)malloc(sizeof(int) * (lst_size / 2));
+		streak_test[0] = streak[0];
+		streak_test[1] = streak[i];
+		streak_hold = streak[i];
+		while (e < lst_size)
+		{
+			if (streak[e] > streak_hold)
+			{
+				streak_count++;
+				streak_hold = streak[e];
+				streak_test[f] = streak_hold;
+				f++;
+			}
+			e++;
+		}
+		if (streak_count > streak_record)
+		{
+			streak_record = streak_count;
+			copy_array(streak_hold_rec, streak_test, streak_record);
+		}
+		free(streak_test);
+		streak_count = 2;
+		i++;
+		e = i + 1;
+	}
+	printf("long streak = %d\n", streak_record);
+	printf("################\n");
+	i = 0;
+	while (i < streak_record)
+		printf("%d\n", streak_hold_rec[i++]);
+
+	free(meh);
+	free(streak);
+}
+
+//Sort List
 
 void	super_sortata(t_ez *sup)
 {
-	int ctr = 0;
+	sup->ctr = 0;
 	int b = ft_lstsize(sup->a);
-	int	tao_facil = 0;
+	t_tao_facil *meh;
+	meh = (t_tao_facil *)malloc(sizeof(t_tao_facil));
+	meh = calc_max(sup->a, meh);
+	int segura = meh->min;
 	while (b > 1)
 	{
 	/*	while (b)
@@ -110,31 +209,45 @@ void	super_sortata(t_ez *sup)
 			b--;
 		}
 		b = ft_lstsize(sup->a);*/
-		tao_facil = calc_max(sup->a);
+		meh = calc_max(sup->a, meh);
+//		printf("max = %d\nmin = %d\nmax2 = %d\nmin2 = %d\n", meh->max, meh->min, meh->max2, meh->min2);
+//		printf("%d\n", b);
 		while (b)
 		{
-			if (sup->a->cnt == tao_facil)
+			if (sup->a->cnt == meh->max)
 			{
 				sup = pb(sup);
-				ctr++;
+				sup->ctr++;
 				break;
 			}
-			else
+			else if (sup->a->cnt == meh->min)
 			{
-				sup->a = rotater(sup->a);
-				ctr++;
-				b--;
+				sup = pb(sup);
+				sup->b = rotater(sup->b);
+				sup->ctr += 2;
+				break;
 			}
+			sup->a = rotater(sup->a);
+			sup->ctr++;
+			b--;
 		}
-		tao_facil = 0;
+		meh->max = 0;
 		b = ft_lstsize(sup->a);
 	}
 	sup = pb(sup);
-	ctr++;
-	printf("%d\n", ctr);
+	sup->ctr++;
+	while (sup->b->cnt != segura)
+	{
+		sup->b = rotater(sup->b);
+		sup->ctr++;
+	}
+	printf("%d\n", sup->ctr);
 	printf("################\n");
-//	print_stacks(sup->a, sup->b);
+	print_stacks(sup->a, sup->b);
+	free (meh);
 }
+
+//Generate Input Numbers
 
 int	check_same(int *lst, int rando, int max)
 {
@@ -146,18 +259,19 @@ int	check_same(int *lst, int rando, int max)
 	return (0);
 }
 
-t_stack	*gen_gator(t_stack *a)
+t_stack	*gen_gator(t_stack *a, char *size)
 {
 	int	i = -1;
-	int	max = 100;
+	int	nb = atoi(size);
+	int	max = nb;
 	int	rando = 0;
-	int	lst[100];
+	int	lst[nb];
 	srand(time(0));
 	while (++i < max)
 	{
-		rando = rand()%700;
+		rando = rand()%100;
 		while (check_same(lst, rando, i))
-			rando = rand()%700;
+			rando = rand()%100;
 		lst[i] = rando;
 		ft_lstadd_back(&a, ft_lstnew(rando));
 	}
@@ -173,7 +287,6 @@ int main(int ac, char **av)
 	(void)ac;
 	(void)av;
 	sup = malloc(sizeof(t_ez));
-	sup->a = gen_gator(sup->a);
 /*	while (++i < ac)
 	{
 		nb = ft_atoi(av[i]);
@@ -185,7 +298,9 @@ int main(int ac, char **av)
 	print_stacks(sup->a, sup->b);
 	sup->a = reverse_rotater(sup->a);
 	print_stacks(sup->a, sup->b);*/
-	super_sortata(sup);
+	sup->a = gen_gator(sup->a, av[1]);
+//	super_sortata(sup);
+	facil(sup);
 	free(sup);
 	exit(0);
 }

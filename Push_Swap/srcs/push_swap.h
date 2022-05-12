@@ -6,7 +6,7 @@
 /*   By: fde-albe <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/26 11:25:14 by fde-albe          #+#    #+#             */
-/*   Updated: 2022/05/02 10:40:12 by fde-albe         ###   ########.fr       */
+/*   Updated: 2022/05/03 11:16:54 by fde-albe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <unistd.h>
 
 typedef struct s_stacks {
 	int					cnt;
@@ -25,7 +26,15 @@ typedef struct s_stacks {
 typedef struct s_ez {
 	t_stack	*a;
 	t_stack *b;
+	int		ctr;
 }			t_ez;
+
+typedef struct s_cenas {
+	int		max;
+	int     max2;
+	int		min;
+	int     min2;
+}			t_tao_facil;
 
 int		ft_atoi(const char *str);
 
